@@ -2,7 +2,7 @@
 <head> <title> This is my first page </title> </head>
 <body bgcolor="aqua">
 <center>
-<h1> Git and Git hub Demo </h1>
+<h1> Git and Git hub Demo for AIT </h1>
 <img src= "images/git-github.png"/>
 </center>
 </body>
