@@ -1,0 +1,125 @@
+DROP TABLE IF EXISTS `dept`;
+CREATE TABLE `dept`  (
+  `DId` char(2)  not null comment 'department number, primary key',
+  `DName` varchar(20)  not null comment 'department name',
+  `DAddr` varchar(20)  null default null comment 'address',
+  `DTele` varchar(16)  null default null comment 'phone',
+  `DEmail` varchar(50)  null default null comment 'mailbox',
+  PRIMARY KEY (`DId`) USING BTREE
+) 
+
+
+DROP TABLE IF EXISTS `course`;
+CREATE TABLE `course`  (
+  `CId` char(4)  not null comment 'course serial number, primary key',
+  `PCId` char(4)  null default null comment 'prerequisite',
+  `DId` char(2)  null default null comment 'opening department number, foreign key',
+  `CName` char(20)  not null comment 'course name',
+  `Cccredit` int (11) not null comment 'credits',
+  `Chour` int (11) not null comment 'class hours',
+  `CAttr` char(6)  not null comment 'course type',
+  `Cnum` int (11) not null comment 'number of candidates',
+  PRIMARY KEY (`CId`) USING BTREE,
+  INDEX`FK_Course_Course`(`PCId`) USING BTREE,
+  INDEX`FK_Course_Dept`(`DId`) USING BTREE,
+  CONSTRAINT `FK_Course_Course` FOREIGN KEY (`PCId`) REFERENCES `course` (`CId`) ON DELETE SET NULL ON UPDATE SET NULL,
+  CONSTRAINT `FK_Course_Dept` FOREIGN KEY (`DId`) REFERENCES `dept` (`DId`) ON DELETE SET NULL ON UPDATE SET NULL
+)
+
+
+DROP TABLE IF EXISTS `exercise`;
+CREATE TABLE `exercise`  (
+  `EId` int(11) NOT NULL,
+  `EContext` varchar(255)  NULL DEFAULT NULL,
+  `ELevel` int(11) NULL DEFAULT NULL,
+  `EAnswer` varchar(255)  NULL DEFAULT NULL,
+  PRIMARY KEY (`EId`) USING BTREE
+)
+
+
+DROP TABLE IF EXISTS `teacher`;
+CREATE TABLE `teacher`  (
+  `TId` char(5)  not null comment 'teacher ID, primary key',
+  `DId` char(2)  null default null comment 'system number, foreign key',
+  `TName` char(8)  not null comment 'name',
+  `TSexy` char(2)  not null comment 'gender',
+  `Tbdate` date not null comment 'date of birth',
+  `TField` char(50)  not null comment 'research area',
+  `TProf` char(10)  not null comment 'professional title',
+  `TTele` char(16)  null default null comment 'contact number',
+  `TQq` char(12)  null default null comment 'QQ number',
+  `TEmail` char(30)  null default null comment 'mailbox',
+  `TMsn` char(30)  NULL DEFAULT NULL COMMENT 'MSN',
+  PRIMARY KEY (`TId`) USING BTREE,
+  INDEX `FK_Teacher_Dept`(`DId`) USING BTREE,
+  CONSTRAINT `FK_Teacher_Dept` FOREIGN KEY (`DId`) REFERENCES `dept` (`DId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+
+DROP TABLE IF EXISTS `grade`;
+CREATE TABLE `grade`  (
+  `GId` char(2)  not null comment 'class number, primary key',
+  `DId` char(2)  null default null comment 'system number, foreign key',
+  `TId` char(5)  null default null comment 'teacher job number, foreign key',
+  `GName` char(20)  not null comment 'class name',
+  `Gyear` int (11) null default null comment 'year of enrollment',
+  PRIMARY KEY (`GId`) USING BTREE,
+  INDEX`FK_Grade_Teacher`(`TId`) USING BTREE,
+  INDEX`FK_Gradet_Dep`(`DId`) USING BTREE,
+  CONSTRAINT `FK_FK_Grade_Teacher` FOREIGN KEY (`TId`) REFERENCES `teacher` (`TId`) ON DELETE SET NULL ON UPDATE SET NULL,
+  CONSTRAINT `FK_FK_Gradet_Dep` FOREIGN KEY (`DId`) REFERENCES `dept` (`DId`) ON DELETE SET NULL ON UPDATE SET NULL
+) 
+
+
+
+DROP TABLE IF EXISTS `student`;
+CREATE TABLE `student`  (
+  `SId` char(9)  not null comment 'student number, primary key',
+  `GId` char(2)  not null comment 'class ID, foreign key',
+  `SName` char(8)  not null comment 'name',
+  `SSexy` char(2)  not null comment 'gender',
+  `Sbdate` date not null comment 'date of birth',
+  `STele` char(11)  null default null comment 'contact number',
+  PRIMARY KEY (`SId`) USING BTREE,
+  INDEX `FK_Student_Grade`(`GId`) USING BTREE,
+  CONSTRAINT `FK_Student_Grade` FOREIGN KEY (`GId`) REFERENCES `grade` (`GId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+
+
+DROP TABLE IF EXISTS `sc`;
+CREATE TABLE `sc`  (
+  `SCID` int (11) not null comment 'course selection serial number, primary key',
+  `CId` char(4)  not null comment 'course number, foreign key',
+  `SId` char(9)  not null comment 'student number, foreign key',
+  `SCTerm` char(12)  null default null comment 'starting academic year / semester',
+  `Scscore1` float null default null comment 'usual score',
+  `Scscore2` float null default null comment 'Interim grade',
+  `Scscore3` float null default null comment 'final grade',
+  `Scscore` float null default null comment 'total score',
+  PRIMARY KEY (`SCId`) USING BTREE,
+  INDEX `FK_SC_Course`(`CId`) USING BTREE,
+  INDEX `FK_SC_Student`(`SId`) USING BTREE,
+  CONSTRAINT `FK_SC_Course` FOREIGN KEY (`CId`) REFERENCES `course` (`CId`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_SC_Student` FOREIGN KEY (`SId`) REFERENCES `student` (`SId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+
+DROP TABLE IF EXISTS `information`;
+CREATE TABLE `information`  (
+  `IID` int (11) not null comment 'sequence number, primary key',
+  `CId` char(4)  not null comment 'course serial number, foreign key',
+  `TId` char(5)  not null comment 'teacher number, foreign key',
+  `GId` char(2)  not null comment 'class number, foreign key',
+  `IRoom` char(10)  null default null comment 'classroom',
+  `Iweek` int (11) null default null comment 'day of week',
+  `ITimeseg` char(8)  null default null comment 'what class is it',
+  `ITerm` char(12)  null default null comment 'starting academic year / semester',
+  PRIMARY KEY (`IId`) USING BTREE,
+  INDEX`FK_Information_Course`(`CId`) USING BTREE,
+  INDEX`FK_Information_Grade`(`GId`) USING BTREE,
+  INDEX`FK_Information_Teacher`(`TId`) USING BTREE,
+  CONSTRAINT `FK_Information_Course` FOREIGN KEY (`CId`) REFERENCES `course` (`CId`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_Information_Grade` FOREIGN KEY (`GId`) REFERENCES `grade` (`GId`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FK_Information_Teacher` FOREIGN KEY (`TId`) REFERENCES `teacher` (`TId`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
